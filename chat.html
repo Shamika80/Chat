@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat Room</title>
+  <style>
+
+    body {
+      font-family: sans-serif;
+    }
+    #chatbox {
+      width: 400px;
+      height: 300px;
+      border: 1px solid #ccc;
+      overflow-y: scroll;
+      padding: 10px;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    .user {
+      font-weight: bold;
+    }
+    .system {
+      color: gray;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Chat Room</h1>
+  <div id="chatbox"></div>
+  <input type="text" id="message" placeholder="Enter message">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    const room = urlParams.get('room');
+
+    const socket   
+ = new WebSocket('ws://localhost:3000');
+
+    socket.addEventListener('open', (event) => {
+      socket.send(JSON.stringify({ type: 'join', username, room }));
+    });
+
+    socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'chat' || data.type === 'message_edited') {
+        displayMessage(data);
+      } else if (data.type === 'user_joined' || data.type === 'user_left') {
+        displayMessage({ user: 'System', message: data.message, class: 'system' });
+      } else if (data.type === 'message_deleted') {
+     document.getElementById(data.id)}
